@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { competition = 'BSA', status, matchday } = req.query;
+    const { competition = 'WC', status, matchday } = req.query;
 
     // Monta URL de forma limpa com URLSearchParams
     const params = new URLSearchParams();
