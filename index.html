@@ -843,6 +843,7 @@ function showToast(msg, type='green'){
 function abrirConfig(){
   document.getElementById('cfg-name').value     = STATE.userName || '';
   document.getElementById('cfg-interval').value = String(STATE.interval);
+  document.getElementById('cfg-token').value    = STATE.token || '';
   document.getElementById('cfg-modal').classList.remove('hide');
 }
 function fecharConfig(){
