@@ -899,13 +899,38 @@ async function fetchAPI(){
   setSyncStatus('spin', 'Sincronizando com football-data.org…');
 
   const endpoints = [
-    '/api/matches?competition=WC',
-    '/api/matches?competition=WC&status=SCHEDULED',
+    'https://api.football-data.org/v4/competitions/WC/matches',
+    'https://api.football-data.org/v4/competitions/WC/matches?status=SCHEDULED',
   ];
 
   for(const url of endpoints){
     try{
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: { 'X-Auth-Token': STATE.token }
+      });
+      if(res.status === 403){
+        setSyncStatus('err', `Acesso negado (403) · Token sem permissão para este endpoint`);
+        continue;
+      }
+      if(res.status === 429){
+        setSyncStatus('err', '⏱ Muitas requisições (429) · Aguarde antes de tentar novamente');
+        return null;
+      }
+      if(!res.ok){
+        setSyncStatus('err', `Erro HTTP ${res.status} · Verifique seu token`);
+        continue;
+      }
+      const data = await res.json();
+      const matches = data.matches || [];
+      STATE.lastSync = new Date().toISOString();
+      return matches;
+    }catch(e){
+      setSyncStatus('err', `Falha de conexão: ${e.message}`);
+      return null;
+    }
+  }
+  return null;
+}
       if(res.status === 403){
         setSyncStatus('err', `Acesso negado (403) · Token sem permissão para este endpoint`);
         continue;
