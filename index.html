@@ -835,7 +835,6 @@ function showToast(msg, type='green'){
    CONFIG MODAL
 ═══════════════════════════════════════════════ */
 function abrirConfig(){
-  document.getElementById('cfg-token').value    = STATE.token || '';
   document.getElementById('cfg-name').value     = STATE.userName || '';
   document.getElementById('cfg-interval').value = String(STATE.interval);
   document.getElementById('cfg-modal').classList.remove('hide');
@@ -844,7 +843,6 @@ function fecharConfig(){
   document.getElementById('cfg-modal').classList.add('hide');
 }
 function salvarConfig(){
-  STATE.token    = document.getElementById('cfg-token').value.trim();
   STATE.userName = document.getElementById('cfg-name').value.trim() || 'Você';
   STATE.interval = Number(document.getElementById('cfg-interval').value);
   document.getElementById('auto-sel').value = String(STATE.interval);
@@ -852,7 +850,6 @@ function salvarConfig(){
   iniciarAutoSync();
   fecharConfig();
   showToast('⚙️ Configurações salvas!', 'gold');
-  if(STATE.token) doSync();
 }
 function resetarTudo(){
   if(!confirm('⚠️ Apagar todos os palpites e resultados salvos? Não tem volta!')) return;
