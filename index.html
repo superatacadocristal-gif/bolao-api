@@ -889,14 +889,15 @@ async function fetchAPI(){
     return null;
   }
   setSyncStatus('spin', 'Sincronizando com football-data.org…');
-const endpoints = [
-  '/api/matches?competition=WC',
-  '/api/matches?competition=WC&status=SCHEDULED',
-];
 
-for(const url of endpoints){
-  try{
-    const res = await fetch(url); // sem headers — token fica só no servidor
+  const endpoints = [
+    '/api/matches?competition=WC',
+    '/api/matches?competition=WC&status=SCHEDULED',
+  ];
+
+  for(const url of endpoints){
+    try{
+      const res = await fetch(url);
       if(res.status === 403){
         setSyncStatus('err', `Acesso negado (403) · Token sem permissão para este endpoint`);
         continue;
@@ -920,6 +921,7 @@ for(const url of endpoints){
   }
   return null;
 }
+
 /* ─── Normaliza status da API → estado interno ─── */
 function normStatus(s){
   if(!s) return 'sched';
@@ -928,6 +930,7 @@ function normStatus(s){
   if(['FINISHED','FULL_TIME','AWARDED'].includes(u)) return 'enc';
   return 'sched';
 }
+
 /* ─── Faz merge dos dados da API no STATE.results ─── */
 function mergeResults(apiMatches){
   if(!apiMatches || !apiMatches.length) return;
@@ -935,7 +938,6 @@ function mergeResults(apiMatches){
     const ta  = normName(am.homeTeam?.name || am.homeTeam?.shortName || '');
     const tb  = normName(am.awayTeam?.name || am.awayTeam?.shortName || '');
     const st  = normStatus(am.status);
-    /* Procura o jogo correspondente no calendário local */
     const match = CAL.find(m => m.ta === ta && m.tb === tb);
     if(!match) return;
     const ga = am.score?.fullTime?.home  ?? am.score?.halfTime?.home  ?? null;
@@ -943,17 +945,16 @@ function mergeResults(apiMatches){
     STATE.results[match.id] = { ga, gb, status: st };
   });
 }
+
 /* ─── Sync principal ─── */
 async function doSync(){
   const matches = await fetchAPI();
   if(!matches){
-    /* Se não tem token ainda, apenas mostra status */
     if(!STATE.token) return;
     return;
   }
   mergeResults(matches);
   saveState();
-  /* Atualiza tudo */
   buildTicker(matches);
   renderGrupos();
   renderPalpites();
@@ -965,6 +966,7 @@ async function doSync(){
   setSyncStatus('ok', `${matches.length} jogos · ${liveCount > 0 ? liveCount+' ao vivo · ' : ''}Atualizado às ${now}`);
   showToast(`✅ Sincronizado! ${matches.length} jogos carregados`, 'green');
 }
+
 /* ─── Auto sync ─── */
 function iniciarAutoSync(){
   if(autoTimer){ clearInterval(autoTimer); autoTimer=null; }
@@ -972,11 +974,13 @@ function iniciarAutoSync(){
     autoTimer = setInterval(doSync, STATE.interval);
   }
 }
+
 function changeAutoSync(val){
   STATE.interval = Number(val);
   saveState();
   iniciarAutoSync();
 }
+
 /* ═══════════════════════════════════════════════
    TICKER — barra de rolagem com resultados
 ═══════════════════════════════════════════════ */
