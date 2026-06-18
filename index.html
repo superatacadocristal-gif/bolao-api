@@ -852,6 +852,7 @@ function fecharConfig(){
 function salvarConfig(){
   STATE.userName = document.getElementById('cfg-name').value.trim() || 'Você';
   STATE.interval = Number(document.getElementById('cfg-interval').value);
+  STATE.token    = document.getElementById('cfg-token').value.trim();
   document.getElementById('auto-sel').value = String(STATE.interval);
   saveState();
   iniciarAutoSync();
