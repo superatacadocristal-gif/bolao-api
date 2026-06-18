@@ -902,16 +902,14 @@ async function fetchAPI(){
     return null;
   }
   setSyncStatus('spin', 'Sincronizando com football-data.org…');
-  const headers = { 'X-Auth-Token': STATE.token };
-  /* Tenta primeiro o endpoint específico da Copa do Mundo 2026
-     Se falhar (plano free pode não ter acesso), cai no endpoint geral */
-  const endpoints = [
-    'https://api.football-data.org/v4/competitions/WC/matches',
-    'https://api.football-data.org/v4/matches'
-  ];
-  for(const url of endpoints){
-    try{
-      const res = await fetch(url, { headers });
+const endpoints = [
+  '/api/matches?competition=WC',
+  '/api/matches?competition=WC&status=SCHEDULED',
+];
+
+for(const url of endpoints){
+  try{
+    const res = await fetch(url); // sem headers — token fica só no servidor
       if(res.status === 403){
         setSyncStatus('err', `Acesso negado (403) · Token sem permissão para este endpoint`);
         continue;
